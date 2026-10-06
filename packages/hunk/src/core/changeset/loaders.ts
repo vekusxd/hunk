@@ -348,6 +348,7 @@ export async function loadAppBootstrap(
     initialHunkGap: input.options.hunkGap ?? DEFAULT_HUNK_GAP,
     initialWheelScrollLines: input.options.wheelScrollLines ?? DEFAULT_WHEEL_SCROLL_LINES,
     initialWrapLines: input.options.wrapLines ?? false,
+    initialSplitPaneRatio: input.options.splitRatio,
     initialShowHunkHeaders: input.options.hunkHeaders ?? true,
     initialShowMenuBar: input.options.menuBar ?? true,
     initialSidebar: input.options.sidebar ?? "auto",

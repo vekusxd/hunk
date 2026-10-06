@@ -30,6 +30,7 @@ import {
   type SplitLineCell,
 } from "./diff/diffRows";
 import { resolveSplitPaneWidths, resolveSplitCellGeometry } from "./diff/codeColumns";
+import { clampSplitPaneRatio, DEFAULT_SPLIT_PANE_RATIO } from "./diff/splitPaneRatio";
 import {
   diffRailMarker,
   neutralRailColor,
@@ -237,7 +238,10 @@ function renderStaticSplitRow(
     return "";
   }
 
-  const { leftWidth, rightWidth } = resolveSplitPaneWidths(width);
+  const { leftWidth, rightWidth } = resolveSplitPaneWidths(
+    width,
+    clampSplitPaneRatio(options.splitRatio ?? DEFAULT_SPLIT_PANE_RATIO),
+  );
   return `${renderStaticSplitCell(
     row.left,
     "left",

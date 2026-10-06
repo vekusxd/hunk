@@ -55,6 +55,10 @@ export interface UseAppKeyboardShortcutsOptions {
   exitFileViewMode: () => void;
   /** Offer one key to the active file-view mode and report what it decided. */
   sendFileViewModeKey: (key: ExtensionKeyEvent) => ExtensionFileViewModeKeyResult;
+  /** Whether the split-pane resize mode currently owns its movement keys. */
+  isSplitResizeActive: () => boolean;
+  /** Offer one key to the split-pane resize mode; true when it consumed the key. */
+  sendSplitResizeKey: (key: KeyEvent) => boolean;
   /** Whether a session-scoped extension keyboard mode currently owns review keys. */
   isKeyboardModeActive: () => boolean;
   /** Leave the active session keyboard mode. */
@@ -121,6 +125,8 @@ export function useAppKeyboardShortcuts({
   isFileViewModeActive,
   exitFileViewMode,
   sendFileViewModeKey,
+  isSplitResizeActive,
+  sendSplitResizeKey,
   isKeyboardModeActive,
   exitKeyboardMode,
   sendKeyboardModeKey,
@@ -158,6 +164,8 @@ export function useAppKeyboardShortcuts({
   const isFileViewModeActiveRef = useRef(isFileViewModeActive);
   const exitFileViewModeRef = useRef(exitFileViewMode);
   const sendFileViewModeKeyRef = useRef(sendFileViewModeKey);
+  const isSplitResizeActiveRef = useRef(isSplitResizeActive);
+  const sendSplitResizeKeyRef = useRef(sendSplitResizeKey);
   const isKeyboardModeActiveRef = useRef(isKeyboardModeActive);
   const exitKeyboardModeRef = useRef(exitKeyboardMode);
   const sendKeyboardModeKeyRef = useRef(sendKeyboardModeKey);
@@ -181,6 +189,8 @@ export function useAppKeyboardShortcuts({
   isFileViewModeActiveRef.current = isFileViewModeActive;
   exitFileViewModeRef.current = exitFileViewMode;
   sendFileViewModeKeyRef.current = sendFileViewModeKey;
+  isSplitResizeActiveRef.current = isSplitResizeActive;
+  sendSplitResizeKeyRef.current = sendSplitResizeKey;
   isKeyboardModeActiveRef.current = isKeyboardModeActive;
   exitKeyboardModeRef.current = exitKeyboardMode;
   sendKeyboardModeKeyRef.current = sendKeyboardModeKey;
@@ -560,6 +570,20 @@ export function useAppKeyboardShortcuts({
     return "mine";
   };
 
+  /**
+   * Route divider movement keys to the host split-pane resize mode.
+   *
+   * Only resize and finish keys are claimed; everything else (scrolling, the toggle command
+   * itself) falls through so the review stays navigable while the divider moves.
+   */
+  const handleSplitResizeShortcut = (key: KeyEvent): KeyOwner => {
+    if (!isSplitResizeActiveRef.current()) {
+      return "notMine";
+    }
+
+    return sendSplitResizeKeyRef.current(key) ? "mine" : "notMine";
+  };
+
   /** Route review-level keys through the one active session extension mode. */
   const handleKeyboardModeShortcut = (key: KeyEvent): KeyOwner => {
     if (!isKeyboardModeActiveRef.current()) {
@@ -613,7 +637,12 @@ export function useAppKeyboardShortcuts({
     // Without an open-menu command match, focused inputs and extension modes
     // keep their ordinary precedence ahead of the command table.
     const reviewOwned = routeKeyOwnership(
-      [handleFocusedInputShortcut, handleFileViewModeShortcut, handleKeyboardModeShortcut],
+      [
+        handleFocusedInputShortcut,
+        handleSplitResizeShortcut,
+        handleFileViewModeShortcut,
+        handleKeyboardModeShortcut,
+      ],
       key,
       consumeKey,
     );

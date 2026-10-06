@@ -26,6 +26,7 @@ import {
   MIN_REVIEW_GAP,
   validateReviewGap,
 } from "./reviewGap";
+import { DEFAULT_SPLIT_RATIO, validateSplitRatio } from "./splitRatio";
 import { DEFAULT_TAB_WIDTH, validateTabWidth } from "./tabWidth";
 import { DEFAULT_WHEEL_SCROLL_LINES, validateWheelScrollLines } from "./wheelScrollLines";
 import { findProjectRootCandidate } from "../process/projectRoot";
@@ -292,6 +293,19 @@ function normalizeTabWidth(value: unknown) {
   return validateTabWidth(value, "tab_width");
 }
 
+/** Accept a bounded split-view left-pane share from TOML configuration. */
+function normalizeSplitRatio(value: unknown) {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (typeof value !== "number") {
+    throw new Error("Expected split_ratio to be a number from 0.1 to 0.9.");
+  }
+
+  return validateSplitRatio(value, "split_ratio");
+}
+
 /** Accept a bounded integer file or hunk gap from TOML configuration. */
 function normalizeReviewGap(value: unknown, key: "file_gap" | "hunk_gap") {
   if (value === undefined) {
@@ -443,6 +457,15 @@ export const CONFIG_REFERENCE_OPTIONS: readonly ConfigReferenceOption[] = [
     accepted: "`true` or `false`",
     runtimeDefault: DEFAULT_VIEW_PREFERENCES.wrapLines,
     description: "Wrap long diff lines instead of keeping one visual row.",
+  },
+  {
+    key: "split_ratio",
+    property: "splitRatio",
+    type: "number",
+    accepted: "0.1 through 0.9",
+    runtimeDefault: DEFAULT_SPLIT_RATIO,
+    description:
+      "Share of split-view code width given to the old (left) pane. Adjust live with `Ctrl+R`, then `h`/`l`.",
   },
   {
     key: "hunk_headers",
@@ -1037,6 +1060,8 @@ function normalizeConfigReferenceValue(property: keyof CommonOptions, value: unk
       return normalizeReviewGap(value, "file_gap");
     case "hunkGap":
       return normalizeReviewGap(value, "hunk_gap");
+    case "splitRatio":
+      return normalizeSplitRatio(value);
     case "wheelScrollLines":
       return normalizeWheelScrollLines(value);
     case "sidebar":
@@ -1108,6 +1133,7 @@ function mergeOptions(base: CommonOptions, overrides: CommonOptions): CommonOpti
     hunkGap: overrides.hunkGap ?? base.hunkGap,
     wheelScrollLines: overrides.wheelScrollLines ?? base.wheelScrollLines,
     wrapLines: overrides.wrapLines ?? base.wrapLines,
+    splitRatio: overrides.splitRatio ?? base.splitRatio,
     hunkHeaders: overrides.hunkHeaders ?? base.hunkHeaders,
     menuBar: overrides.menuBar ?? base.menuBar,
     animations: overrides.animations ?? base.animations,
@@ -1392,6 +1418,7 @@ export function resolveConfiguredCliInput(
     hunkGap: resolvedOptions.hunkGap ?? DEFAULT_HUNK_GAP,
     wheelScrollLines: resolvedOptions.wheelScrollLines ?? DEFAULT_WHEEL_SCROLL_LINES,
     wrapLines: resolvedOptions.wrapLines ?? DEFAULT_VIEW_PREFERENCES.wrapLines,
+    splitRatio: resolvedOptions.splitRatio ?? DEFAULT_SPLIT_RATIO,
     hunkHeaders: resolvedOptions.hunkHeaders ?? DEFAULT_VIEW_PREFERENCES.showHunkHeaders,
     menuBar: resolvedOptions.menuBar ?? DEFAULT_VIEW_PREFERENCES.showMenuBar,
     animations: resolvedOptions.animations ?? true,

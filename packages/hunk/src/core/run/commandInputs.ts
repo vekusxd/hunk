@@ -56,6 +56,8 @@ export interface CommonOptions {
   /** Review rows to move per vertical mouse-wheel event. */
   wheelScrollLines?: WheelScrollLines;
   wrapLines?: boolean;
+  /** Share of split-view code width given to the old (left) pane. */
+  splitRatio?: number;
   hunkHeaders?: boolean;
   menuBar?: boolean;
   animations?: boolean;

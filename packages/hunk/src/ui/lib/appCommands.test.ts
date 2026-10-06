@@ -62,6 +62,7 @@ function createTestCommands(resolvedKeys?: ResolvedCommandKeys) {
     selectCursorLine: record("selectCursorLine"),
     stepDiffLine: record("stepDiffLine"),
     selectLayoutMode: record("selectLayoutMode"),
+    toggleSplitPaneResize: record("toggleSplitPaneResize"),
     startUserNote: record("startUserNote"),
     toggleAgentNotes: record("toggleAgentNotes"),
     toggleCopyDecorations: record("toggleCopyDecorations"),

@@ -141,6 +141,16 @@ Wrap long diff lines instead of keeping one visual row.
 
 ---
 
+**`split_ratio`**
+
+Share of split-view code width given to the old (left) pane. Adjust live with `Ctrl+R`, then `h`/`l`.
+
+- **Type:** number
+- **Accepted:** 0.1 through 0.9
+- **Built-in default:** `0.5`
+
+---
+
 **`hunk_headers`**
 
 Show hunk metadata rows in the review stream.

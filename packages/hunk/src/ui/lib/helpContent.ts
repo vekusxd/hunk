@@ -90,6 +90,10 @@ const HELP_SECTIONS: readonly HelpSectionSpec[] = [
         description: "unified / split / auto",
       },
       {
+        commandIds: ["hunk.view.resizeSplitPanes"],
+        description: "resize split panes (h/l, Esc)",
+      },
+      {
         commandIds: ["hunk.view.toggleFilesPane", "hunk.view.openThemeSelector"],
         description: "sidebar / theme selector",
       },

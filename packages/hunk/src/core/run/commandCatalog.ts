@@ -401,6 +401,15 @@ const BUILTIN_COMMANDS = [
     closesMenu: true,
   },
   {
+    id: "hunk.view.resizeSplitPanes",
+    title: "Resize split panes",
+    category: "view",
+    defaultKeys: ["ctrl+r"],
+    locus: "client-local",
+    publicToExtensions: true,
+    closesMenu: true,
+  },
+  {
     id: "hunk.view.applyFilePresentationToAllMatching",
     title: "Apply the current file presentation to all matching files",
     category: "view",

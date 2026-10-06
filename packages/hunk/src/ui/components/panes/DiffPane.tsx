@@ -102,6 +102,7 @@ import type { ResolvedFileViewLayout } from "../../fileViews/useFileViews";
 import { measureFileViewGeometry } from "../../fileViews/geometry";
 import { buildFileViewRenderPlan } from "../../fileViews/renderPlan";
 import { prefetchHighlightedDiff } from "../../diff/useHighlightedDiff";
+import { DEFAULT_SPLIT_PANE_RATIO } from "../../diff/splitPaneRatio";
 import {
   buildFileRenderWindow,
   buildFileSectionIndexById,
@@ -326,6 +327,7 @@ export function DiffPane({
   headerLabelWidth,
   headerStatsWidth,
   layout,
+  splitPaneRatio = DEFAULT_SPLIT_PANE_RATIO,
   scrollRef,
   selectedFileId,
   selectedHunkIndex,
@@ -406,6 +408,8 @@ export function DiffPane({
   headerLabelWidth: number;
   headerStatsWidth: number;
   layout: Exclude<LayoutMode, "auto">;
+  /** Left-pane share of split code width; geometry memos re-measure when it changes. */
+  splitPaneRatio?: number;
   scrollRef: RefObject<ScrollBoxRenderable | null>;
   selectedFileId?: string;
   selectedHunkIndex: number;
@@ -1128,6 +1132,7 @@ export function DiffPane({
       files,
       hunkGap,
       layout,
+      splitPaneRatio,
       reserveAddNoteColumn,
       showHunkHeaders,
       showLineNumbers,
@@ -1178,6 +1183,7 @@ export function DiffPane({
       files,
       hunkGap,
       layout,
+      splitPaneRatio,
       reserveAddNoteColumn,
       showHunkHeaders,
       showLineNumbers,
@@ -1272,6 +1278,7 @@ export function DiffPane({
       diffContentWidth,
       height,
       layout,
+      splitPaneRatio,
       scrollViewport.height,
       sectionGeometry,
       selectionContentIdentities,
@@ -1379,6 +1386,7 @@ export function DiffPane({
       headerLabelWidth,
       headerStatsWidth,
       layout,
+      splitPaneRatio,
       pinnedHeaderFile,
       reserveAddNoteColumn,
       sectionGeometry,
@@ -2575,7 +2583,7 @@ export function DiffPane({
                 <box
                   // Remount the diff content when width/layout/wrap mode changes so viewport culling
                   // recomputes against the new row geometry, while the outer scrollbox keeps its state.
-                  key={`diff-content:${layout}:${wrapLines ? "wrap" : "nowrap"}:tabs-${tabWidth}:${width}`}
+                  key={`diff-content:${layout}:${wrapLines ? "wrap" : "nowrap"}:tabs-${tabWidth}:${width}:${splitPaneRatio}`}
                   style={{ width: "100%", flexDirection: "column", overflow: "visible" }}
                 >
                   {fileRenderItems.map((item) => {

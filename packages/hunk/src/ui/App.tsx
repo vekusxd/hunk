@@ -84,6 +84,7 @@ import { useTimedNotice } from "./hooks/useTimedNotice";
 import { useUserNoteComposer } from "./hooks/useUserNoteComposer";
 import { useTerminalReview, type AgentNoteGeometrySnapshot } from "./hooks/useTerminalReview";
 import { useViewPreferenceQuitController } from "./hooks/useViewPreferenceQuitController";
+import { useSplitPaneResize } from "./hooks/useSplitPaneResize";
 import type { WatchedInputRuntime } from "./hooks/useWatchedInput";
 import { agentNoteMarkupWidth } from "./lib/agentNoteGeometry";
 import {
@@ -514,11 +515,21 @@ export function App({
   const bodyWidth = Math.max(0, terminal.width - bodyPadding);
   const responsiveLayout = resolveResponsiveLayout(layoutMode, terminal.width);
   const resolvedLayout = responsiveLayout.layout;
+  const splitPaneResize = useSplitPaneResize({
+    initialRatio: bootstrap.initialSplitPaneRatio,
+    layout: resolvedLayout,
+    showNotice: showTransientNotice,
+  });
   const canForceShowSidebar =
     bodyWidth >= SIDEBAR_MIN_WIDTH + EXTENSION_PANE_DIVIDER_SIZE + DIFF_MIN_WIDTH;
   // Derive host contributions from current state so filters and notices cannot go stale.
   const statusNoticeText =
-    sessionNoticeText ?? transientNoticeText ?? noticeText ?? fileViewModeHint ?? null;
+    splitPaneResize.modeStatusHint ??
+    sessionNoticeText ??
+    transientNoticeText ??
+    noticeText ??
+    fileViewModeHint ??
+    null;
   const statusLineSnapshot = useMemo<StatusLineSnapshot>(() => {
     const hostItems: StatusItem[] = [];
     if (review.filter.length > 0) {
@@ -890,12 +901,26 @@ export function App({
         maxLineNumberDigits,
         showLineNumbers,
       ),
-    [diffContentWidth, maxLineNumberDigits, resolvedLayout, showLineNumbers],
+    // The split ratio is read from shared geometry, so it only participates as a dependency.
+    [
+      diffContentWidth,
+      maxLineNumberDigits,
+      resolvedLayout,
+      showLineNumbers,
+      splitPaneResize.splitPaneRatio,
+    ],
   );
   // Redraw subsequent geometry changes without clearing a review mounted into an existing root.
   useIntermediateRenderAfterMount(
     renderer,
-    [renderSidebar, resolvedLayout, terminal.height, terminal.width, wrapLines],
+    [
+      renderSidebar,
+      resolvedLayout,
+      splitPaneResize.splitPaneRatio,
+      terminal.height,
+      terminal.width,
+      wrapLines,
+    ],
     Boolean(onFirstFrameReady),
   );
   const firstFrameReportedRef = useRef(false);
@@ -1301,6 +1326,7 @@ export function App({
         stepDiffLine,
         selectCursorLine,
         selectLayoutMode,
+        toggleSplitPaneResize: splitPaneResize.toggleMode,
         hasVisualSelection: () => selectionActionsRef.current?.hasSelection() ?? false,
         startVisualSelection: () => selectionActionsRef.current?.beginKeyboardSelection(),
         copySelection: () => selectionActionsRef.current?.copy(),
@@ -1419,6 +1445,8 @@ export function App({
     isFileViewModeActive,
     exitFileViewMode,
     sendFileViewModeKey,
+    isSplitResizeActive: splitPaneResize.isModeActive,
+    sendSplitResizeKey: splitPaneResize.sendModeKey,
     isKeyboardModeActive,
     exitKeyboardMode,
     sendKeyboardModeKey,
@@ -1639,6 +1667,7 @@ export function App({
             headerLabelWidth={diffHeaderLabelWidth}
             headerStatsWidth={diffHeaderStatsWidth}
             layout={resolvedLayout}
+            splitPaneRatio={splitPaneResize.splitPaneRatio}
             scrollRef={diffScrollRef}
             selectedFileId={selectedFile?.id}
             selectedHunkIndex={selectedHunkIndex}

@@ -3,6 +3,7 @@ import type { DiffFile } from "../../core/changeset/model";
 import type { LayoutMode } from "../../core/run/commandInputs";
 import { measureTextWidth } from "../lib/text";
 import type { DiffRow } from "./diffRowModel";
+import { getSplitPaneRatio } from "./splitPaneRatio";
 
 export const DIFF_RAIL_PREFIX_WIDTH = 1;
 export const DIFF_SPLIT_SEPARATOR_WIDTH = 1;
@@ -109,14 +110,16 @@ export function findMaxLineNumberInRows(rows: Iterable<DiffRow>, fallback = 1) {
   return Math.max(highest, 1);
 }
 
-/** Split-view panes reserve one rail column on the left and one separator column in the middle. */
-export function resolveSplitPaneWidths(width: number) {
+/**
+ * Split-view panes reserve one rail column on the left and one separator column in the middle.
+ *
+ * The remaining code width is divided by the active split ratio (half by default).
+ */
+export function resolveSplitPaneWidths(width: number, ratio = getSplitPaneRatio()) {
   const usableWidth = Math.max(0, width - DIFF_RAIL_PREFIX_WIDTH - DIFF_SPLIT_SEPARATOR_WIDTH);
-  const leftWidth = Math.max(0, DIFF_RAIL_PREFIX_WIDTH + Math.floor(usableWidth / 2));
-  const rightWidth = Math.max(
-    0,
-    DIFF_SPLIT_SEPARATOR_WIDTH + usableWidth - Math.floor(usableWidth / 2),
-  );
+  const leftUsableWidth = Math.floor(usableWidth * ratio);
+  const leftWidth = Math.max(0, DIFF_RAIL_PREFIX_WIDTH + leftUsableWidth);
+  const rightWidth = Math.max(0, DIFF_SPLIT_SEPARATOR_WIDTH + usableWidth - leftUsableWidth);
 
   return { leftWidth, rightWidth };
 }

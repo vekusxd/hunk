@@ -18,6 +18,7 @@ import {
 import type { PlannedFileViewRow } from "../fileViews/renderPlan";
 import type { PlannedReviewRow } from "./reviewRenderPlan";
 import { measurePlannedRenderedRowHeight } from "./codeRowLayout";
+import { splitPaneRatioCacheKey } from "./splitPaneRatio";
 
 const EMPTY_EXPANDED_GAP_KEYS: ReadonlySet<string> = new Set();
 const EMPTY_VISIBLE_AGENT_NOTES: VisibleAgentNote[] = [];
@@ -320,7 +321,7 @@ export function measureDiffSectionGeometry(
     theme.lineNumberBg,
     theme.lineNumberFg,
   ].join(":");
-  const cacheKey = `${file.id}:${layout}:${showHunkHeaders ? 1 : 0}:${themeCacheKey}:${width}:${showLineNumbers ? 1 : 0}:${wrapLines ? 1 : 0}:${reserveAddNoteColumn ? 1 : 0}:tabs:${tabWidth}:hunkGap:${hunkGap}${expansionCacheKey(expandedKeys, sourceStatus)}${notesCacheKey(visibleAgentNotes)}`;
+  const cacheKey = `${file.id}:${layout}:${showHunkHeaders ? 1 : 0}:${themeCacheKey}:${width}:${showLineNumbers ? 1 : 0}:${wrapLines ? 1 : 0}:${reserveAddNoteColumn ? 1 : 0}:tabs:${tabWidth}:hunkGap:${hunkGap}:${layout === "split" ? splitPaneRatioCacheKey() : ""}${expansionCacheKey(expandedKeys, sourceStatus)}${notesCacheKey(visibleAgentNotes)}`;
   const cacheSlot = sectionGeometryCacheSlot(visibleAgentNotes);
   const cached = getCachedSectionGeometry(file, cacheSlot, cacheKey);
   if (cached) {

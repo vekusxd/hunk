@@ -158,6 +158,7 @@ Review and shared commands:
 | `hunk.view.layoutSplit`                        | Split layout                                   | `2`                          |
 | `hunk.view.layoutUnified`                      | Unified layout                                 | `1`                          |
 | `hunk.view.openThemeSelector`                  | Choose theme                                   | `t`                          |
+| `hunk.view.resizeSplitPanes`                   | Resize split panes                             | `ctrl+r`                     |
 | `hunk.view.toggleAgentNotes`                   | Toggle agent notes                             | `a`                          |
 | `hunk.view.toggleCopyDecorations`              | Toggle copy decorations                        | _(none)_                     |
 | `hunk.view.toggleFilesPane`                    | Toggle files pane                              | `s`                          |

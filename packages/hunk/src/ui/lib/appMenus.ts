@@ -160,6 +160,7 @@ export function buildAppMenus({
       },
       { commandId: "hunk.view.layoutSplit", label: "Split view", checked: layoutMode === "split" },
       { commandId: "hunk.view.layoutAuto", checked: layoutMode === "auto" },
+      { commandId: "hunk.view.resizeSplitPanes", label: "Resize split panes" },
       SEPARATOR,
       { commandId: "hunk.view.toggleFilesPane", label: "Files pane", checked: filesPaneVisible },
       { commandId: "hunk.view.toggleMenuBar", label: "Menu bar", checked: showMenuBar },

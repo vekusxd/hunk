@@ -138,6 +138,8 @@ export interface BuildAppCommandsOptions {
   stepDiffLine: (delta: number) => void;
   selectCursorLine: (style: CursorLine) => void;
   selectLayoutMode: (mode: LayoutMode) => void;
+  /** Enter or leave the keyboard mode that moves the split-view divider. */
+  toggleSplitPaneResize: () => void;
   hasVisualSelection?: () => boolean;
   startVisualSelection?: () => void;
   copySelection?: () => void;
@@ -258,6 +260,7 @@ function builtinCommandHandlers(
     "hunk.view.layoutSplit": { run: () => options.selectLayoutMode("split") },
     "hunk.view.layoutUnified": { run: () => options.selectLayoutMode("unified") },
     "hunk.view.layoutAuto": { run: () => options.selectLayoutMode("auto") },
+    "hunk.view.resizeSplitPanes": { run: () => options.toggleSplitPaneResize() },
     "hunk.view.applyFilePresentationToAllMatching": {
       isEnabled: () => options.canApplyFilePresentationToAllMatching,
       run: () => options.applyFilePresentationToAllMatching(),
@@ -367,6 +370,7 @@ const NOOP_COMMAND_OPTIONS: BuildAppCommandsOptions = (() => {
     stepDiffLine: noop,
     selectCursorLine: noop,
     selectLayoutMode: noop,
+    toggleSplitPaneResize: noop,
     hasVisualSelection: () => false,
     startVisualSelection: noop,
     copySelection: noop,

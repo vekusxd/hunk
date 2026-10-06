@@ -50,6 +50,7 @@ export interface AppBootstrap<ExtensionState = unknown> {
   initialHunkGap?: number;
   initialWheelScrollLines?: WheelScrollLines;
   initialWrapLines?: boolean;
+  initialSplitPaneRatio?: number;
   initialShowHunkHeaders?: boolean;
   initialShowMenuBar?: boolean;
   initialSidebar?: SidebarVisibility;
